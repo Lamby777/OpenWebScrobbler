@@ -228,18 +228,35 @@ export function SongForm() {
       setAlbumArtist('');
     }
 
+    // if we're in custom timestamp mode, increment the timestamp
     if (isCustomDate) {
-      const newTimestamp = addSeconds(timestamp, DEFAULT_SONG_DURATION);
-
-      if (newTimestamp > addDays(new Date(), 1)) {
-        // Goes too much into the future, disable custom timestamp
-        setIsCustomDate(false);
-      } else {
-        setTimestamp(newTimestamp);
-      }
+      // TODO: non-awaited async call inside a sync function
+      incrementTimestamp({
+        artist,
+        title,
+        album,
+        albumArtist,
+      });
     }
 
     document.getElementById(locks.artist ? 'title' : 'artist').focus();
+  };
+
+  const incrementTimestamp = async (scrobble: any) => {
+    // we first try fetching the song length via lastfm
+    // note: lastfm provides song lengths in ms, not seconds
+    const info = await trackGetInfo({ artist: scrobble.artist, title: scrobble.title });
+
+    // ...but if that doesn't work, just use the default const. it's good enough
+    const duration = (info?.duration && info.duration / 1000) ?? DEFAULT_SONG_DURATION;
+    const newTimestamp = addSeconds(timestamp, duration);
+
+    if (newTimestamp > addDays(new Date(), 1)) {
+      // Goes too much into the future, disable custom timestamp
+      setIsCustomDate(false);
+    } else {
+      setTimestamp(newTimestamp);
+    }
   };
 
   const swapArtistTitle = () => {
