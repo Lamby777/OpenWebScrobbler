@@ -231,21 +231,16 @@ export function SongForm() {
     // if we're in custom timestamp mode, increment the timestamp
     if (isCustomDate) {
       // TODO: non-awaited async call inside a sync function
-      incrementTimestamp({
-        artist,
-        title,
-        album,
-        albumArtist,
-      });
+      incrementTimestamp(artist, title);
     }
 
     document.getElementById(locks.artist ? 'title' : 'artist').focus();
   };
 
-  const incrementTimestamp = async (scrobble: any) => {
+  const incrementTimestamp = async (artist: string, title: string) => {
     // we first try fetching the song length via lastfm
     // note: lastfm provides song lengths in ms, not seconds
-    const info = await trackGetInfo({ artist: scrobble.artist, title: scrobble.title });
+    const info = await trackGetInfo({ artist, title });
 
     // ...but if that doesn't work, just use the default const. it's good enough
     const duration = (info?.duration && info.duration / 1000) ?? DEFAULT_SONG_DURATION;
