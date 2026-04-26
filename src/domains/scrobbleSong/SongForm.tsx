@@ -66,6 +66,7 @@ export function SongForm() {
     album: false,
     artist: false,
   });
+  const [trackLengthFetching, setTrackLengthFetching] = useState(true);
   const [albumArtist, setAlbumArtist] = useState('');
   const [formIsValid, setFormValid] = useState(false);
   const [timestamp, setTimestamp] = useState(new Date());
@@ -500,6 +501,17 @@ export function SongForm() {
               }
             >
               <DateTimePicker value={timestamp} onChange={setTimestamp} />
+              <FormGroup check>
+                <Label className="d-block" check>
+                  <Input
+                    type="checkbox"
+                    name="trackLengthFetching"
+                    checked={trackLengthFetching}
+                    onChange={() => setTrackLengthFetching(!trackLengthFetching)}
+                  />
+                  <Trans i18nKey="trackLengthFetching">Increment time input box by track length</Trans>
+                </Label>
+              </FormGroup>
             </Suspense>
           )}
           <div className="row">
