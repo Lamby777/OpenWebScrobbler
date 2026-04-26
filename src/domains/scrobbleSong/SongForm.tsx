@@ -236,25 +236,27 @@ export function SongForm() {
     document.getElementById(locks.artist ? 'title' : 'artist').focus();
   };
 
-  // returns a promise that rejects after `ms` ms
-  const sleepR = (ms: number) => new Promise((_, reject) => setTimeout(reject, ms));
+  // returns a promise that resolves after `ms` ms
+  const sleep = (ms: number) => new Promise<null>((resolve) => setTimeout(() => resolve(null), ms));
+
+  // fetches the song length, in seconds, via lastfm api if it can
+  // gives up after a short timeout to avoid overwriting the ui element annoyingly
+  async function fetchTrackLength(artist: string, title: string): ReturnType<typeof trackGetInfo> | null {
+    // if the user turned off this feature, return null immediately
+    if (false) { }
+
+    return await Promise.race([
+      // note: lastfm provides song lengths in ms, not seconds
+      trackGetInfo({ artist, title }),
+
+      // give up fetching after vvvvvvv this amount of seconds
+      sleep(LASTFM_LENGTH_FETCH_TIMEOUT * 1000),
+    ]);
+  }
 
   const incrementTimestamp = async (artist: string, title: string) => {
-    let info;
-
-    try {
-      info = await Promise.race([
-        // we first try fetching the song length via lastfm
-        // note: lastfm provides song lengths in ms, not seconds
-        trackGetInfo({ artist, title }),
-
-        // the Promise.race with this timeout causes it to give up fetching
-        // in case it might overwrite the box too late and be annoying
-        sleepR(LASTFM_LENGTH_FETCH_TIMEOUT * 1000),
-      ]);
-    } catch {
-      //
-    }
+    // this takes at most `LASTFM_LENGTH_FETCH_TIMEOUT` seconds
+    const info = await fetchTrackLength(artist, title);
 
     // ...but if that doesn't work, just use the default const. it's good enough
     const duration = (info?.duration && info.duration / 1000) ?? DEFAULT_SONG_DURATION;
