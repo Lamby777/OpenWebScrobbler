@@ -18,7 +18,7 @@ import { enqueueScrobble } from 'store/actions/scrobbleActions';
 
 import { ScrobbleCloneContext } from './ScrobbleSong';
 
-import { DEFAULT_SONG_DURATION } from 'Constants';
+import { DEFAULT_SONG_DURATION, LASTFM_LENGTH_FETCH_TIMEOUT } from 'Constants';
 
 import './SongForm.css';
 
@@ -230,17 +230,31 @@ export function SongForm() {
 
     // if we're in custom timestamp mode, increment the timestamp
     if (isCustomDate) {
-      // TODO: non-awaited async call inside a sync function
       incrementTimestamp(artist, title);
     }
 
     document.getElementById(locks.artist ? 'title' : 'artist').focus();
   };
 
+  // returns a promise that rejects after `ms` ms
+  const sleepR = (ms: number) => new Promise((_, reject) => setTimeout(reject, ms));
+
   const incrementTimestamp = async (artist: string, title: string) => {
-    // we first try fetching the song length via lastfm
-    // note: lastfm provides song lengths in ms, not seconds
-    const info = await trackGetInfo({ artist, title });
+    let info;
+
+    try {
+      info = await Promise.race([
+        // we first try fetching the song length via lastfm
+        // note: lastfm provides song lengths in ms, not seconds
+        trackGetInfo({ artist, title }),
+
+        // the Promise.race with this timeout causes it to give up fetching
+        // in case it might overwrite the box too late and be annoying
+        sleepR(LASTFM_LENGTH_FETCH_TIMEOUT * 1000),
+      ]);
+    } catch {
+      //
+    }
 
     // ...but if that doesn't work, just use the default const. it's good enough
     const duration = (info?.duration && info.duration / 1000) ?? DEFAULT_SONG_DURATION;
