@@ -504,6 +504,7 @@ export function SongForm() {
                   <Input
                     type="checkbox"
                     name="trackLengthFetching"
+                    data-cy="SongForm-trackLengthFetching"
                     checked={trackLengthFetching}
                     onChange={() => setTrackLengthFetching(!trackLengthFetching)}
                   />
