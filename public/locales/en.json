@@ -45,6 +45,7 @@
   "custom": "Custom...",
   "timestamp": "Timestamp",
   "unknown": "Unknown",
+  "trackLengthFetching": "Increment time input box by track length",
   "lastfmWillRejectOldTimestamps": "Last.fm will reject scrobbles older than two weeks.",
   "keepOriginalTimestamp": "Scrobble using original date and time",
   "noSongsScrobbled": "No songs scrobbled yet!",
