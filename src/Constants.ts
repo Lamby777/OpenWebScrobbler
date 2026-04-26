@@ -13,7 +13,7 @@ export const LASTFM_API_RATE_LIMIT = 0; // At this moment is 5 rq/s over 5m per 
 export const MAX_SCROBBLES_PER_REQUEST = 50;
 export const MAX_RECENT_USERS = 6;
 export const MAX_RECENT_ALBUMS = 8;
-export const DEFAULT_SONG_DURATION = 3 * 60; // ToDo: use this value when skipping time forward after scrobble
+export const DEFAULT_SONG_DURATION = 3 * 60;
 // Live music is unpredictable, but usually the band takes a few seconds to breathe / introduce song.
 // Adding some leeway to encapsulate this, but it will never be perfect.
 export const DEFAULT_CONCERT_INTERVAL_DURATION = 2 * 60;
